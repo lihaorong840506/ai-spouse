@@ -4,7 +4,7 @@
 
 // 설정
 const CONFIG = {
-    API_URL: window.location.origin,  // 같은 서버에 호스팅된 경우
+    API_URL: 'http://localhost:8080',  // Flask 서버 주소
     MAX_RETRY: 3,
     RETRY_DELAY: 1000
 };

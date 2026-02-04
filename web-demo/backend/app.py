@@ -1,6 +1,6 @@
 """
 AI 배우자 (AI Spouse) - 웹 채팅 백엔드
-Flask 기반 OpenAI API 서버
+Flask 기반 Azure OpenAI API 서버
 """
 
 import os
@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from openai import OpenAI
+from openai import AzureOpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,8 +16,15 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# OpenAI 클라이언트 초기화
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+# Azure OpenAI 클라이언트 초기화
+client = AzureOpenAI(
+    azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
+    api_key=os.getenv('AZURE_OPENAI_API_KEY'),
+    api_version=os.getenv('AZURE_OPENAI_API_VERSION', '2024-12-01-preview')
+)
+
+# Azure OpenAI 배포 이름
+AZURE_DEPLOYMENT_NAME = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME', 'gpt-4o-mini')
 
 # 세션별 대화 히스토리 저장
 # 프로덕션에서는 Redis나 DB 사용 권장
@@ -77,9 +84,9 @@ def chat():
         if len(sessions[session_id]) > 12:  # system + 10개 대화
             sessions[session_id] = [sessions[session_id][0]] + sessions[session_id][-10:]
         
-        # OpenAI API 호출
+        # Azure OpenAI API 호출
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=AZURE_DEPLOYMENT_NAME,
             messages=sessions[session_id],
             max_tokens=500,
             temperature=0.7
@@ -144,4 +151,6 @@ def health_check():
 if __name__ == '__main__':
     print("🚀 AI 배우자 웹 서버 시작...")
     print(f"📍 http://localhost:5000")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    print(f"🔧 Azure OpenAI 엔드포인트: {os.getenv('AZURE_OPENAI_ENDPOINT')}")
+    print(f"🤖 사용 모델: {AZURE_DEPLOYMENT_NAME}")
+    app.run(debug=True, host='0.0.0.0', port=8080)

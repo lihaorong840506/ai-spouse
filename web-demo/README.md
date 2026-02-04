@@ -23,21 +23,30 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. OpenAI API 키 설정
+### 2. Azure OpenAI API 설정
 
-`.env` 파일을 생성하고 API 키를 입력하세요:
+`.env` 파일을 생성하고 Azure OpenAI 설정을 입력하세요:
 
 ```
-OPENAI_API_KEY=your-api-key-here
+AZURE_OPENAI_ENDPOINT=https://luoji-ai-azure.cognitiveservices.azure.com
+AZURE_OPENAI_API_KEY=your-azure-api-key-here
+AZURE_OPENAI_API_VERSION=2024-12-01-preview
+AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o-mini
 ```
 
 또는 환경 변수로 설정:
 ```bash
 # Windows
-set OPENAI_API_KEY=your-api-key-here
+set AZURE_OPENAI_ENDPOINT=https://luoji-ai-azure.cognitiveservices.azure.com
+set AZURE_OPENAI_API_KEY=your-azure-api-key-here
+set AZURE_OPENAI_API_VERSION=2024-12-01-preview
+set AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o-mini
 
 # macOS/Linux
-export OPENAI_API_KEY=your-api-key-here
+export AZURE_OPENAI_ENDPOINT=https://luoji-ai-azure.cognitiveservices.azure.com
+export AZURE_OPENAI_API_KEY=your-azure-api-key-here
+export AZURE_OPENAI_API_VERSION=2024-12-01-preview
+export AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o-mini
 ```
 
 ### 3. 서버 실행
@@ -56,19 +65,35 @@ python app.py
 ```
 web-demo/
 ├── backend/
-│   └── app.py              # Flask 서버 + OpenAI API
+│   └── app.py              # Flask 서버 + Azure OpenAI API
 ├── frontend/
 │   ├── index.html          # 메인 페이지
 │   ├── style.css           # 스타일링
 │   └── chat.js             # 채팅 로직
 ├── static/
 │   └── persona.txt         # AI 페르소나 설정
+├── .env.example            # 환경 변수 예시
 └── requirements.txt        # Python 패키지 목록
 ```
 
+## 🔧 Azure OpenAI 설정
+
+이 프로젝트는 **Azure OpenAI**를 사용합니다. 다음 정보가 필요합니다:
+
+- `AZURE_OPENAI_ENDPOINT` - Azure OpenAI 서비스 엔드포인트
+- `AZURE_OPENAI_API_KEY` - Azure 포털에서 발급받은 API 키
+- `AZURE_OPENAI_API_VERSION` - API 버전 (예: 2024-12-01-preview)
+- `AZURE_OPENAI_DEPLOYMENT_NAME` - Azure에 배포된 모델 이름 (예: gpt-4o-mini)
+
+Azure OpenAI 설정 방법:
+1. [Azure Portal](https://portal.azure.com)에서 Azure OpenAI 서비스 생성
+2. "Keys and Endpoint"에서 API 키와 엔드포인트 복사
+3. Azure OpenAI Studio에서 모델 배포 (Deployment)
+4. 배포된 모델 이름을 `AZURE_OPENAI_DEPLOYMENT_NAME`로 설정
+
 ## 🎨 기능
 
-- 💬 실시간 채팅 (WebSocket 지원)
+- 💬 실시간 채팅
 - 📱 모바일 친화적 UI
 - 🎭 다정한 AI 배우자 페르소나
 - 🔄 대화 히스토리 유지 (세션 기반)
