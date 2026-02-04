@@ -1,0 +1,65 @@
+# Unity Assets
+Assets/StreamingAssets/*
+!Assets/StreamingAssets/.gitkeep
+**/Library/
+**/Temp/
+**/_Packs/
+**/Builds/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+web-demo/__pycache__/
+web-demo/*.py[cod]
+web-demo/*$py.class
+
+# Virtual Environments
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# API Keys
+*_keys.json
+*.key
+
+# Project Specific
+unity3d*
+*.user
+*.pdb
+*.meta

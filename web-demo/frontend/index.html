@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 배우자 💕</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 헤더 -->
+        <header class="chat-header">
+            <div class="header-content">
+                <div class="avatar">💕</div>
+                <div class="header-info">
+                    <h1>AI 배우자</h1>
+                    <span class="status">온라인</span>
+                </div>
+                <button class="reset-btn" onclick="resetChat()" title="대화 초기화">
+                    🔄
+                </button>
+            </div>
+        </header>
+
+        <!-- 채팅 영역 -->
+        <main class="chat-container">
+            <div id="messages" class="messages">
+                <!-- 초기 환영 메시지 -->
+                <div class="message ai-message">
+                    <div class="message-bubble">
+                        안녕하세요, 여보~! 오늘 하루 어땠어? 나랑 이야기하자~ ♡
+                    </div>
+                    <div class="message-time">오늘</div>
+                </div>
+            </div>
+            
+            <!-- 로딩 인디케이터 -->
+            <div id="loading" class="loading hidden">
+                <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span class="loading-text">AI 배우자가 생각 중...</span>
+            </div>
+        </main>
+
+        <!-- 입력 영역 -->
+        <footer class="input-area">
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    placeholder="메시지를 입력하세요..."
+                    autocomplete="off"
+                >
+                <button id="send-btn" onclick="sendMessage()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- API 키 입력 모달 -->
+    <div id="api-key-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🔐 API 키 설정</h2>
+            <p>OpenAI API 키를 입력하세요:</p>
+            <input type="password" id="api-key-input" placeholder="sk-...">
+            <div class="modal-buttons">
+                <button onclick="saveApiKey()">저장</button>
+                <button onclick="closeModal()">취소</button>
+            </div>
+            <p class="modal-note">
+                API 키는 브라우저에만 저장되며 서버로 전송되지 않습니다.<br>
+                <a href="https://platform.openai.com/api-keys" target="_blank">API 키 발급 받기</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+</html>
