@@ -21,7 +21,6 @@ namespace AISpouse.Core
         [SerializeField]
         private string _customSystemPrompt = "";
 
-        [Header("이벤트")]
         public event Action<string> OnUserMessageSent;
         public event Action<string> OnAIResponseReceived;
         public event Action<string> OnError;
