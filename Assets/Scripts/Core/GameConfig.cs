@@ -2,21 +2,27 @@ using UnityEngine;
 
 namespace AISpouse.Core
 {
-    /// <summary>
-    /// 게임 설정 및 API 키 관리
-    /// </summary>
     [CreateAssetMenu(fileName = "GameConfig", menuName = "AI Spouse/Game Config")]
     public class GameConfig : ScriptableObject
     {
-        [Header("OpenAI 설정")]
-        [Tooltip("OpenAI API 키 (환경 변수나 .env 파일에서 로드 권장)")]
+        [Header("Azure OpenAI 설정")]
+        [Tooltip("Azure OpenAI 엔드포인트 URL")]
         [SerializeField]
-        private string _openAIApiKey = "";
+        private string _azureEndpoint = "https://luoji-ai-azure.cognitiveservices.azure.com";
 
-        [Tooltip("사용할 GPT 모델")]
+        [Tooltip("Azure OpenAI API 키")]
         [SerializeField]
-        private string _modelName = "gpt-3.5-turbo";
+        private string _azureApiKey = "";
 
+        [Tooltip("Azure OpenAI API 버전")]
+        [SerializeField]
+        private string _apiVersion = "2024-12-01-preview";
+
+        [Tooltip("Azure 배포 이름 (Deployment Name)")]
+        [SerializeField]
+        private string _deploymentName = "gpt-4o";
+
+        [Header("대화 설정")]
         [Tooltip("최대 토큰 수")]
         [SerializeField]
         private int _maxTokens = 500;
@@ -26,7 +32,6 @@ namespace AISpouse.Core
         [SerializeField]
         private float _temperature = 0.7f;
 
-        [Header("대화 설정")]
         [Tooltip("최대 대화 히스토리 수")]
         [SerializeField]
         private int _maxConversationHistory = 10;
@@ -35,20 +40,20 @@ namespace AISpouse.Core
         [SerializeField]
         private int _requestTimeoutSeconds = 30;
 
-        // 공개 속성
-        public string OpenAIApiKey => _openAIApiKey;
-        public string ModelName => _modelName;
+        public string AzureEndpoint => _azureEndpoint;
+        public string AzureApiKey => _azureApiKey;
+        public string ApiVersion => _apiVersion;
+        public string DeploymentName => _deploymentName;
         public int MaxTokens => _maxTokens;
         public float Temperature => _temperature;
         public int MaxConversationHistory => _maxConversationHistory;
         public int RequestTimeoutSeconds => _requestTimeoutSeconds;
 
-        /// <summary>
-        /// API 키가 유효한지 확인
-        /// </summary>
-        public bool IsValidApiKey()
+        public bool IsValidConfig()
         {
-            return !string.IsNullOrEmpty(_openAIApiKey) && _openAIApiKey.StartsWith("sk-");
+            return !string.IsNullOrEmpty(_azureApiKey) && 
+                   !string.IsNullOrEmpty(_azureEndpoint) && 
+                   !string.IsNullOrEmpty(_deploymentName);
         }
 
         private void OnValidate()

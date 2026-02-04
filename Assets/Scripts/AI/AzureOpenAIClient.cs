@@ -4,25 +4,16 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AISpouse.AI
 {
-    /// <summary>
-    /// OpenAI API 통신 클라이언트
-    /// </summary>
-    public class OpenAIClient : MonoBehaviour
+    public class AzureOpenAIClient : MonoBehaviour
     {
         [SerializeField]
         private Core.GameConfig _gameConfig;
 
-        private const string OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
         private List<ChatMessage> _conversationHistory = new List<ChatMessage>();
 
-        /// <summary>
-        /// 대화 초기화 (시스템 프롬프트 설정)
-        /// </summary>
         public void Initialize(string systemPrompt)
         {
             _conversationHistory.Clear();
@@ -36,60 +27,55 @@ namespace AISpouse.AI
                 });
             }
 
-            Debug.Log("[OpenAIClient] 시스템 프롬프트 설정 완료");
+            Debug.Log("[AzureOpenAIClient] 시스템 프롬프트 설정 완료");
         }
 
-        /// <summary>
-        /// 사용자 메시지를 전송하고 AI 응답을 받습니다
-        /// </summary>
         public async Task<AIResponse> SendMessageAsync(string userMessage)
         {
             if (_gameConfig == null)
             {
-                Debug.LogError("[OpenAIClient] GameConfig가 설정되지 않았습니다!");
+                Debug.LogError("[AzureOpenAIClient] GameConfig가 설정되지 않았습니다!");
                 return AIResponse.Failure("설정 오류");
             }
 
-            if (!_gameConfig.IsValidApiKey())
+            if (!_gameConfig.IsValidConfig())
             {
-                Debug.LogError("[OpenAIClient] 유효하지 않은 API 키입니다!");
-                return AIResponse.Failure("API 키 오류");
+                Debug.LogError("[AzureOpenAIClient] 유효하지 않은 설정입니다!");
+                return AIResponse.Failure("설정 오류: API 키와 엔드포인트를 확인하세요");
             }
 
-            // 사용자 메시지를 히스토리에 추가
             _conversationHistory.Add(new ChatMessage
             {
                 role = "user",
                 content = userMessage
             });
 
-            // 히스토리 크기 제한
             TrimConversationHistory();
 
             try
             {
-                var requestBody = new OpenAIRequest
+                var requestBody = new AzureOpenAIRequest
                 {
-                    model = _gameConfig.ModelName,
                     messages = _conversationHistory.ToArray(),
                     max_tokens = _gameConfig.MaxTokens,
                     temperature = _gameConfig.Temperature
                 };
 
-                string jsonBody = JsonConvert.SerializeObject(requestBody, Formatting.None);
+                string jsonBody = JsonUtility.ToJson(requestBody);
                 byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
 
-                using (UnityWebRequest request = new UnityWebRequest(OPENAI_API_URL, "POST"))
+                string url = $"{_gameConfig.AzureEndpoint}/openai/deployments/{_gameConfig.DeploymentName}/chat/completions?api-version={_gameConfig.ApiVersion}";
+
+                using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
                 {
                     request.uploadHandler = new UploadHandlerRaw(bodyRaw);
                     request.downloadHandler = new DownloadHandlerBuffer();
                     request.SetRequestHeader("Content-Type", "application/json");
-                    request.SetRequestHeader("Authorization", $"Bearer {_gameConfig.OpenAIApiKey}");
+                    request.SetRequestHeader("api-key", _gameConfig.AzureApiKey);
                     request.timeout = _gameConfig.RequestTimeoutSeconds;
 
-                    Debug.Log($"[OpenAIClient] 요청 전송: {userMessage.Substring(0, Math.Min(50, userMessage.Length))}...");
+                    Debug.Log($"[AzureOpenAIClient] 요청 전송: {userMessage.Substring(0, Math.Min(50, userMessage.Length))}...");
 
-                    // 비동기 요청
                     var operation = request.SendWebRequest();
                     while (!operation.isDone)
                     {
@@ -101,22 +87,21 @@ namespace AISpouse.AI
                         string responseText = request.downloadHandler.text;
                         var response = ParseResponse(responseText);
                         
-                        // AI 응답을 히스토리에 추가
                         _conversationHistory.Add(new ChatMessage
                         {
                             role = "assistant",
                             content = response.Content
                         });
 
-                        Debug.Log($"[OpenAIClient] 응답 수신: {response.Content.Substring(0, Math.Min(50, response.Content.Length))}...");
+                        Debug.Log($"[AzureOpenAIClient] 응답 수신: {response.Content.Substring(0, Math.Min(50, response.Content.Length))}...");
                         
                         return AIResponse.Success(response.Content);
                     }
                     else
                     {
                         string error = $"API 요청 실패: {request.error}";
-                        Debug.LogError($"[OpenAIClient] {error}");
-                        Debug.LogError($"[OpenAIClient] 응답: {request.downloadHandler.text}");
+                        Debug.LogError($"[AzureOpenAIClient] {error}");
+                        Debug.LogError($"[AzureOpenAIClient] 응답: {request.downloadHandler.text}");
                         return AIResponse.Failure(error);
                     }
                 }
@@ -124,17 +109,13 @@ namespace AISpouse.AI
             catch (Exception ex)
             {
                 string error = $"예외 발생: {ex.Message}";
-                Debug.LogError($"[OpenAIClient] {error}");
+                Debug.LogError($"[AzureOpenAIClient] {error}");
                 return AIResponse.Failure(error);
             }
         }
 
-        /// <summary>
-        /// 대화 히스토리 크기 제한
-        /// </summary>
         private void TrimConversationHistory()
         {
-            // 시스템 메시지 제외하고 카운트
             int nonSystemCount = 0;
             int systemMessagesCount = 0;
 
@@ -150,7 +131,6 @@ namespace AISpouse.AI
                 }
             }
 
-            // 최대 히스토리를 초과하면 오래된 메시지 제거 (시스템 메시지 제외)
             while (nonSystemCount > _gameConfig.MaxConversationHistory)
             {
                 for (int i = 0; i < _conversationHistory.Count; i++)
@@ -165,45 +145,38 @@ namespace AISpouse.AI
             }
         }
 
-        /// <summary>
-        /// OpenAI 응답 파싱
-        /// </summary>
         private OpenAIResponseData ParseResponse(string jsonResponse)
         {
             try
             {
-                var jObject = JObject.Parse(jsonResponse);
-                var firstChoice = jObject["choices"]?[0];
-                var message = firstChoice?["message"];
-
-                return new OpenAIResponseData
+                var response = JsonUtility.FromJson<AzureOpenAIResponse>(jsonResponse);
+                
+                if (response.choices != null && response.choices.Length > 0)
                 {
-                    Content = message?["content"]?.ToString() ?? "응답을 받지 못했습니다."
-                };
+                    return new OpenAIResponseData
+                    {
+                        Content = response.choices[0].message.content
+                    };
+                }
+                
+                return new OpenAIResponseData { Content = "응답을 받지 못했습니다." };
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[OpenAIClient] 응답 파싱 오류: {ex.Message}");
+                Debug.LogError($"[AzureOpenAIClient] 응답 파싱 오류: {ex.Message}");
                 return new OpenAIResponseData { Content = "응답 파싱 오류" };
             }
         }
 
-        /// <summary>
-        /// 현재 대화 히스토리 반환
-        /// </summary>
         public IReadOnlyList<ChatMessage> GetConversationHistory()
         {
             return _conversationHistory.AsReadOnly();
         }
 
-        /// <summary>
-        /// 대화 히스토리 초기화
-        /// </summary>
         public void ClearHistory()
         {
             string systemPrompt = null;
             
-            // 시스템 프롬프트 보존
             foreach (var msg in _conversationHistory)
             {
                 if (msg.role == "system")
@@ -224,25 +197,36 @@ namespace AISpouse.AI
                 });
             }
 
-            Debug.Log("[OpenAIClient] 대화 히스토리 초기화 완료");
+            Debug.Log("[AzureOpenAIClient] 대화 히스토리 초기화 완료");
         }
     }
 
-    /// <summary>
-    /// API 요청 데이터 구조
-    /// </summary>
     [Serializable]
-    public class OpenAIRequest
+    public class AzureOpenAIRequest
     {
-        public string model;
         public ChatMessage[] messages;
         public int max_tokens;
         public float temperature;
     }
 
-    /// <summary>
-    /// 채팅 메시지 구조
-    /// </summary>
+    [Serializable]
+    public class AzureOpenAIResponse
+    {
+        public Choice[] choices;
+    }
+
+    [Serializable]
+    public class Choice
+    {
+        public Message message;
+    }
+
+    [Serializable]
+    public class Message
+    {
+        public string content;
+    }
+
     [Serializable]
     public class ChatMessage
     {
@@ -250,17 +234,11 @@ namespace AISpouse.AI
         public string content;
     }
 
-    /// <summary>
-    /// OpenAI 응답 데이터
-    /// </summary>
     public class OpenAIResponseData
     {
         public string Content { get; set; }
     }
 
-    /// <summary>
-    /// AI 응답 결과
-    /// </summary>
     public class AIResponse
     {
         public bool IsSuccess { get; private set; }
