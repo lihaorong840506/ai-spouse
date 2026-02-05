@@ -4,7 +4,7 @@
 
 ### 1. 필수 요구사항
 - **Unity 2022.3 LTS** 또는 **Unity 6 (6000.x)**
-- **TextMeshPro** 패키지 (Unity 기본 포함)
+- 추가 패키지 불필요 (Unity 기본 UI 사용)
 
 ### 2. 프로젝트 구조
 
@@ -49,15 +49,15 @@ Assets/
    - Child Alignment: Upper Center
 
 **Input Field 생성:**
-1. `GameObject > UI > Input Field - TextMeshPro` 생성
+1. `GameObject > UI > Input Field` 생성
 2. 이름을 "InputField"로 변경
 3. 위치: 하단 중앙
 4. 크기: Width: 800, Height: 100
 
 **Send Button 생성:**
-1. `GameObject > UI > Button - TextMeshPro` 생성
+1. `GameObject > UI > Button` 생성
 2. 이름을 "SendButton"로 변경
-3. 텍스트를 "전송"으로 변경
+3. 텍스트를 "전송"으로 변경 (Button 하위 Text 오브젝트)
 4. 위치: InputField 옆
 
 #### Step 4: 스크립트 추가
@@ -117,7 +117,7 @@ Assets/
 - 올바른 API 키를 입력하세요
 
 **"InputField를 찾을 수 없습니다" 오류:**
-- Scene에 TMP_InputField가 있는 GameObject 이름이 "InputField"가 아님
+- Scene에 InputField가 있는 GameObject 이름이 "InputField"가 아님
 - GameObject 이름을 "InputField"로 변경하거나 ChatUI 컴포넌트에 직접 연결하세요
 
 **UI가 보이지 않음:**

@@ -2,7 +2,6 @@
     "name": "AISpouse",
     "rootNamespace": "AISpouse",
     "references": [
-        "Unity.TextMeshPro",
         "UnityEngine.UI"
     ],
     "includePlatforms": [],

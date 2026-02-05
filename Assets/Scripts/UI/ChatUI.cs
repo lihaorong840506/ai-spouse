@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using AISpouse.Core;
 
 namespace AISpouse.UI
@@ -9,7 +8,7 @@ namespace AISpouse.UI
     {
         [Header("UI 참조 (자동 검색됨)")]
         [SerializeField]
-        private TMP_InputField _inputField;
+        private InputField _inputField;
 
         [SerializeField]
         private Button _sendButton;
@@ -46,7 +45,7 @@ namespace AISpouse.UI
 
             if (_inputField == null)
             {
-                _inputField = GameObject.Find("InputField")?.GetComponent<TMP_InputField>();
+                _inputField = GameObject.Find("InputField")?.GetComponent<InputField>();
             }
 
             if (_sendButton == null)
@@ -69,7 +68,7 @@ namespace AISpouse.UI
             }
 
             if (_inputField == null)
-                Debug.LogError("[ChatUI] InputField를 찾을 수 없습니다. TMP_InputField가 있는 GameObject를 'InputField'라고 이름지으세요.");
+                Debug.LogError("[ChatUI] InputField를 찾을 수 없습니다. InputField가 있는 GameObject를 'InputField'라고 이름지으세요.");
             if (_sendButton == null)
                 Debug.LogWarning("[ChatUI] SendButton을 찾을 수 없습니다.");
 
@@ -173,11 +172,11 @@ namespace AISpouse.UI
             GameObject textObj = new GameObject(isUser ? "UserMessage" : "AIMessage");
             textObj.transform.SetParent(_messageContainer, false);
 
-            TMP_Text textComponent = textObj.AddComponent<TextMeshProUGUI>();
+            Text textComponent = textObj.AddComponent<Text>();
             textComponent.text = message;
             textComponent.fontSize = 16;
             textComponent.color = isUser ? new Color(0.2f, 0.4f, 1f) : new Color(0.2f, 0.8f, 0.2f);
-            textComponent.alignment = isUser ? TextAlignmentOptions.Right : TextAlignmentOptions.Left;
+            textComponent.alignment = isUser ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft;
 
             ContentSizeFitter fitter = textObj.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -190,11 +189,11 @@ namespace AISpouse.UI
             GameObject textObj = new GameObject("SystemMessage");
             textObj.transform.SetParent(_messageContainer, false);
 
-            TMP_Text textComponent = textObj.AddComponent<TextMeshProUGUI>();
+            Text textComponent = textObj.AddComponent<Text>();
             textComponent.text = message;
             textComponent.fontSize = 12;
             textComponent.color = Color.red;
-            textComponent.alignment = TextAlignmentOptions.Center;
+            textComponent.alignment = TextAnchor.MiddleCenter;
 
             ScrollToBottom();
         }

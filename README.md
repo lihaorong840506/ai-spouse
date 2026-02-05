@@ -26,7 +26,7 @@ Assets/
 ### 1. Unity 프로젝트 설정
 1. Unity Hub에서 새 2D 또는 3D 프로젝트 생성 (Unity 2022.3 LTS 이상 권장)
 2. 이 프로젝트의 `Assets/Scripts`와 `Assets/Prompts` 폴터를 Unity 프로젝트로 복사
-3. TextMeshPro 패키지는 Unity 기본 포함 (추가 설치 불필요)
+3. 추가 패키지 설치 불필요 (Unity 기본 UI 사용)
 
 **참고**: Newtonsoft.Json 패키지가 **필요 없습니다**. Unity 내장 JsonUtility를 사용합니다.
 
@@ -42,8 +42,8 @@ Assets/
 ### 3. 씬 구성
 1. 새 씬 생성
 2. `GameObject > UI > Canvas` 생성
-3. `GameObject > UI > Input Field - TextMeshPro` 생성 (이름: "InputField")
-4. `GameObject > UI > Button - TextMeshPro` 생성 (이름: "SendButton")
+3. `GameObject > UI > Input Field` 생성 (이름: "InputField")
+4. `GameObject > UI > Button` 생성 (이름: "SendButton")
 5. `GameObject > UI > Scroll View` 생성 (이름: "ChatScrollView")
 6. 빈 게임 오브젝트 생성 (이름: "AI_Spouse_Manager") 후 다음 컴포넌트 추가:
    - `AzureOpenAIClient` 스크립트
@@ -84,7 +84,7 @@ Assets/
 ✅ Azure OpenAI API 통신 (gpt-4o)
 ✅ 대화 히스토리 관리 (최근 N개 대화 기억)
 ✅ 시스템 프롬프트 (페르소나) 설정
-✅ 기본 채팅 UI (TextMeshPro)
+✅ 기본 채팅 UI (Unity 기본 UI - 추가 패키지 불필요)
 ✅ 에러 처리 및 디버깅 로그
 ✅ Unity 내장 JsonUtility 사용 (외부 패키지 불필요)
 
