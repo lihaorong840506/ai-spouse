@@ -40,8 +40,14 @@ namespace AISpouse.Core
         [SerializeField]
         private int _requestTimeoutSeconds = 30;
 
+        [Header("OpenAI TTS 설정 (프로토타입2)")]
+        [Tooltip("OpenAI API 키 (TTS용)")]
+        [SerializeField]
+        private string _openAIKey = "";
+
         public string AzureEndpoint => _azureEndpoint;
         public string AzureApiKey => _azureApiKey;
+        public string OpenAIKey => _openAIKey;
         public string ApiVersion => _apiVersion;
         public string DeploymentName => _deploymentName;
         public int MaxTokens => _maxTokens;
