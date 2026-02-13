@@ -63,3 +63,6 @@ unity3d*
 *.user
 *.pdb
 *.meta
+
+# OMC
+.omc/
