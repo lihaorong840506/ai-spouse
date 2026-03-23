@@ -1,0 +1,16 @@
+{
+  "name": "web-demo",
+  "version": "1.0.0",
+  "description": "Unity 없이 웹 브라우저에서 AI 배우자와 대화할 수 있는 웹 데모입니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

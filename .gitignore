@@ -66,3 +66,7 @@ unity3d*
 
 # OMC
 .omc/
+
+# playwright
+screenshots
+test-results
